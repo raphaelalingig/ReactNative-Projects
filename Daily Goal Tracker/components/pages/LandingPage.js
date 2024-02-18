@@ -1,88 +1,127 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Modal,
+  ScrollView,
+} from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { Checkbox, Text } from "react-native-paper";
-import { Ionicons } from "@expo/vector-icons";
+import TaskModal from "../modal/TaskModal";
 
 const LandingPage = () => {
-  const [checked, setChecked] = React.useState(false);
-  const status = checked ? "Done" : "Ongoing";
   const HorizontalLine = () => {
     return <View style={styles.horizontalLine}></View>;
   };
+  const [modalVisible, setModalVisible] = useState(false);
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+
+  const [tasks, setTasks] = useState([]);
+  const [checkedTasks, setCheckedTasks] = useState([]);
+
+  const addTask = (newTask) => {
+    setTasks([...tasks, newTask]);
+    setCheckedTasks([...checkedTasks, false]);
+  };
+
+  const toggleTaskStatus = (index) => {
+    const updatedCheckedTasks = [...checkedTasks];
+    updatedCheckedTasks[index] = !updatedCheckedTasks[index];
+    setCheckedTasks(updatedCheckedTasks);
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.menu}>
-          <TouchableOpacity>
-            <AntDesign name="menufold" size={32} color="white" />
-          </TouchableOpacity>
+      <ScrollView>
+        <View style={styles.header}>
+          <View style={styles.menu}>
+            <TouchableOpacity>
+              <AntDesign name="menufold" size={28} color="white" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.optionButton}>
+            <TouchableOpacity>
+              <SimpleLineIcons
+                name="options-vertical"
+                size={24}
+                color="white"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.optionButton}>
-          <TouchableOpacity>
-            <SimpleLineIcons name="options-vertical" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.addTaskContainer}>
-        <TouchableOpacity>
-          <View style={styles.iconPlus}>
-            <Entypo name="plus" size={24} color="#5BDDC7" />
-          </View>
-          <Text style={{ color: "white" }}>Add New Task</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.taskContainer}>
-        <View style={styles.task}>
-          <View style={styles.checkbox}>
-            <Checkbox.Android
-              status={checked ? "checked" : "unchecked"}
-              onPress={() => setChecked(!checked)}
-              color="#5BDDC7"
-              uncheckedColor="white"
-              style={styles.checkbox}
-            />
-          </View>
-          <View style="taskBody">
-            {/* TASK TITLE */}
-            <Text
-              variant="bodyLarge"
-              style={{ color: "white", width: 150, margin: 5 }}
-            >
-              Sample
-            </Text>
-            <HorizontalLine />
-            {/* TASK BODY */}
-            <Text variant="bodyMedium" style={{ color: "white", width: 150 }}>
-              dadawdawd
-            </Text>
-          </View>
-          <View style={styles.taskStatus}>
-            <View style={styles.time}>
-              <Text variant="labelLarge" style={{ color: "black" }}>
-                Time:{" "}
-              </Text>
-              <Text style={{ color: "black" }}>12/01/2002</Text>
+        <View style={styles.addTaskContainer}>
+          <TouchableOpacity onPress={toggleModal}>
+            <View style={styles.iconPlus}>
+              <Entypo name="plus" size={24} color="#5BDDC7" />
             </View>
+            <Text style={{ color: "white" }}>Add New Task</Text>
+          </TouchableOpacity>
+          <TaskModal
+            visible={modalVisible}
+            onClose={toggleModal}
+            onSubmit={addTask}
+          />
+        </View>
+        <View>
+          {tasks.map((task, index) => (
+            <View key={index} style={styles.taskContainer}>
+              <View style={styles.task}>
+                <View style={styles.checkbox}>
+                  <Checkbox.Android
+                    status={checkedTasks[index] ? "checked" : "unchecked"}
+                    onPress={() => toggleTaskStatus(index)}
+                    color="#5BDDC7"
+                    uncheckedColor="white"
+                    style={styles.checkbox}
+                  />
+                </View>
+                <View style="taskBody">
+                  {/* TASK TITLE */}
+                  <Text
+                    variant="bodyLarge"
+                    style={{ color: "white", width: 150, fontWeight: "bold" }}
+                  >
+                    {task.title}
+                  </Text>
+                  <HorizontalLine />
+                  {/* TASK BODY */}
+                  <Text
+                    variant="bodyMedium"
+                    style={{ color: "white", width: 150, fontWeight: "bold" }}
+                  >
+                    {task.description}
+                  </Text>
+                </View>
+                <View style={styles.taskStatus}>
+                  <View style={styles.time}>
+                    <Text variant="labelLarge" style={{ color: "black" }}>
+                      Time:{" "}
+                    </Text>
+                    <Text style={{ color: "black" }}>{task.dueDate}</Text>
+                  </View>
 
-            <View style={styles.statusContainer}>
-              <Text variant="labelLarge" style={{ color: "white" }}>
-                Status:{" "}
-                <Text variant="labelMedium" style={{ color: "white" }}>
-                  {status}
-                </Text>
-              </Text>
+                  <View style={styles.statusContainer}>
+                    <Text variant="labelLarge" style={{ color: "white" }}>
+                      Status:{" "}
+                      <Text variant="labelMedium" style={{ color: "white" }}>
+                        {checkedTasks[index] ? "Done" : "Ongoing"}
+                      </Text>
+                    </Text>
+                  </View>
+                </View>
+              </View>
             </View>
-          </View>
+          ))}
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };
-
-export default LandingPage;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#131E24" },
@@ -102,7 +141,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 20,
   },
-
   task: {
     flexDirection: "row",
     alignItems: "center",
@@ -124,3 +162,5 @@ const styles = StyleSheet.create({
     margin: 2,
   },
 });
+
+export default LandingPage;
