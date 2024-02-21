@@ -79,7 +79,7 @@ const LandingPage = () => {
             <View style={styles.iconPlus}>
               <Entypo name="plus" size={24} color="#5BDDC7" />
             </View>
-            <Text style={{ color: isSwitchOn ? "#000" : "#FFF" }}>
+            <Text style={{ fontWeight: "bold", color: isSwitchOn ? "#000" : "#FFF" }}>
               Add New Task
             </Text>
           </TouchableOpacity>
