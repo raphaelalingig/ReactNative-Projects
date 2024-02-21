@@ -1,25 +1,29 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Modal,
-  ScrollView,
-} from "react-native";
+import { StyleSheet, TouchableOpacity, View, ScrollView } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { SimpleLineIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-import { Checkbox, Text } from "react-native-paper";
+import { Checkbox, Text, Switch } from "react-native-paper";
 import TaskModal from "../modal/TaskModal";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const LandingPage = () => {
-  const HorizontalLine = () => {
-    return <View style={styles.horizontalLine}></View>;
+  const HorizontalLine = ({ isLightMode }) => {
+    return (
+      <View
+        style={[
+          styles.horizontalLine,
+          isLightMode ? styles.lightHorizontalLine : null,
+        ]}
+      />
+    );
   };
+
   const [modalVisible, setModalVisible] = useState(false);
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
+  const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
 
   const [tasks, setTasks] = useState([]);
   const [checkedTasks, setCheckedTasks] = useState([]);
@@ -36,22 +40,38 @@ const LandingPage = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, isSwitchOn ? styles.lightModeContainer : null]}
+    >
       <ScrollView>
         <View style={styles.header}>
           <View style={styles.menu}>
             <TouchableOpacity>
-              <AntDesign name="menufold" size={28} color="white" />
+              <AntDesign
+                name="menufold"
+                size={28}
+                color={isSwitchOn ? "#000" : "#FFF"}
+              />
             </TouchableOpacity>
           </View>
           <View style={styles.optionButton}>
-            <TouchableOpacity>
-              <SimpleLineIcons
-                name="options-vertical"
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialCommunityIcons
+                name="white-balance-sunny"
                 size={24}
-                color="white"
+                color={isSwitchOn ? "#000" : "#FFF"}
+                style={{ marginBottom: 3 }}
               />
-            </TouchableOpacity>
+              <TouchableOpacity>
+                <Text>
+                  <Switch
+                    value={isSwitchOn}
+                    onValueChange={onToggleSwitch}
+                    color="#5BDDC7"
+                  />
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
         <View style={styles.addTaskContainer}>
@@ -59,7 +79,9 @@ const LandingPage = () => {
             <View style={styles.iconPlus}>
               <Entypo name="plus" size={24} color="#5BDDC7" />
             </View>
-            <Text style={{ color: "white" }}>Add New Task</Text>
+            <Text style={{ color: isSwitchOn ? "#000" : "#FFF" }}>
+              Add New Task
+            </Text>
           </TouchableOpacity>
           <TaskModal
             visible={modalVisible}
@@ -69,14 +91,20 @@ const LandingPage = () => {
         </View>
         <View>
           {tasks.map((task, index) => (
-            <View key={index} style={styles.taskContainer}>
+            <View
+              key={index}
+              style={[
+                styles.taskContainer,
+                isSwitchOn ? styles.lightModeTaskContainer : null,
+              ]}
+            >
               <View style={styles.task}>
                 <View style={styles.checkbox}>
                   <Checkbox.Android
                     status={checkedTasks[index] ? "checked" : "unchecked"}
                     onPress={() => toggleTaskStatus(index)}
-                    color="#5BDDC7"
-                    uncheckedColor="white"
+                    color={isSwitchOn ? "#5BDDC7" : "#5BDDC7"}
+                    uncheckedColor={isSwitchOn ? "#000" : "#FFF"}
                     style={styles.checkbox}
                   />
                 </View>
@@ -84,31 +112,50 @@ const LandingPage = () => {
                   {/* TASK TITLE */}
                   <Text
                     variant="bodyLarge"
-                    style={{ color: "white", width: 150, fontWeight: "bold" }}
+                    style={{
+                      color: isSwitchOn ? "#000" : "#FFF",
+                      width: 150,
+                      fontWeight: "bold",
+                    }}
                   >
                     {task.title}
                   </Text>
-                  <HorizontalLine />
+                  <HorizontalLine isLightMode={isSwitchOn} />
                   {/* TASK BODY */}
                   <Text
                     variant="bodyMedium"
-                    style={{ color: "white", width: 150, fontWeight: "bold" }}
+                    style={{
+                      color: isSwitchOn ? "#000" : "#FFF",
+                      width: 150,
+                      fontWeight: "bold",
+                    }}
                   >
                     {task.description}
                   </Text>
                 </View>
                 <View style={styles.taskStatus}>
-                  <View style={styles.time}>
-                    <Text variant="labelLarge" style={{ color: "black" }}>
+                  <View
+                    style={[
+                      styles.time,
+                      isSwitchOn ? styles.lightStatusContainer : null,
+                    ]}
+                  >
+                    <Text variant="labelLarge" style={{ color: "#000" }}>
                       Time:{" "}
                     </Text>
-                    <Text style={{ color: "black" }}>{task.dueDate}</Text>
+                    <Text style={{ color: "#000" }}>{task.dueDate}</Text>
                   </View>
 
                   <View style={styles.statusContainer}>
-                    <Text variant="labelLarge" style={{ color: "white" }}>
+                    <Text
+                      variant="labelLarge"
+                      style={{ color: isSwitchOn ? "#000" : "#FFF" }}
+                    >
                       Status:{" "}
-                      <Text variant="labelMedium" style={{ color: "white" }}>
+                      <Text
+                        variant="labelMedium"
+                        style={{ color: isSwitchOn ? "#000" : "#FFF" }}
+                      >
                         {checkedTasks[index] ? "Done" : "Ongoing"}
                       </Text>
                     </Text>
@@ -125,14 +172,20 @@ const LandingPage = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#131E24" },
-  textTitle: { color: "white" },
+  lightStatusContainer: { backgroundColor: "white", borderColor: "#5BDDC7" },
+  lightModeContainer: { backgroundColor: "#E6E6EA" },
+  lightModeTaskContainer: { backgroundColor: "#F5F5F5" },
+  lightHorizontalLine: { borderBottomColor: "#5BDDC7" },
+
+  textTitle: { color: "#FFF" },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 20,
   },
   menu: { marginHorizontal: 20, marginTop: 6 },
-  optionButton: { marginHorizontal: 20, marginTop: 6 },
+  optionButton: { marginHorizontal: 20 },
   addTaskContainer: { alignItems: "center", marginTop: 20 },
   iconPlus: { alignSelf: "center" },
   taskContainer: {
@@ -150,7 +203,7 @@ const styles = StyleSheet.create({
   checkbox: { marginLeft: 3 },
   taskStatus: { flexDirection: "column" },
   horizontalLine: {
-    borderBottomColor: "white",
+    borderBottomColor: "#FFF",
     borderBottomWidth: 1,
     marginHorizontal: "auto",
   },
@@ -160,7 +213,10 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 5,
     margin: 2,
+    borderWidth: 1,
+    borderColor: "#5BDDC7",
   },
 });
+// #5BDDC7 color green
 
 export default LandingPage;
