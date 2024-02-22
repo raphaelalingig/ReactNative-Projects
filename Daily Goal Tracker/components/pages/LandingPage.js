@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity, View, ScrollView } from "react-native";
+import { StyleSheet, TouchableOpacity, View, ScrollView, Alert, TouchableWithoutFeedback } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { Checkbox, Text, Switch } from "react-native-paper";
@@ -39,6 +39,33 @@ const LandingPage = ({ navigation }) => {
     updatedCheckedTasks[index] = !updatedCheckedTasks[index];
     setCheckedTasks(updatedCheckedTasks);
   };
+  const handleLongPress = (index) => {
+    Alert.alert(
+      "Delete Task",
+      "Are you sure you want to delete this task?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => deleteTask(index),
+          style: "destructive",
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+  const deleteTask = (index) => {
+    const updatedTasks = [...tasks];
+    updatedTasks.splice(index, 1);
+    setTasks(updatedTasks);
+
+    const updatedCheckedTasks = [...checkedTasks];
+    updatedCheckedTasks.splice(index, 1);
+    setCheckedTasks(updatedCheckedTasks);
+  };
 
   return (
     <View
@@ -48,14 +75,13 @@ const LandingPage = ({ navigation }) => {
       <ScrollView>
         <View style={styles.header}>
           <View style={styles.menu}>
-            <TouchableOpacity>
+            <TouchableWithoutFeedback onPress={() => navigation.toggleDrawer()}>
               <AntDesign
                 name="menufold"
                 size={28}
                 color={isSwitchOn ? "#000" : "#FFF"}
-                onPress={() => navigation.toggleDrawer()}
               />
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
           </View>
           <View style={styles.optionButton}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -72,12 +98,10 @@ const LandingPage = ({ navigation }) => {
                     onValueChange={onToggleSwitch}
                     color="#5BDDC7"
                   />
-                  
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
-
         </View>
         <View style={styles.addTaskContainer}>
           <TouchableOpacity onPress={toggleModal}>
@@ -101,78 +125,79 @@ const LandingPage = ({ navigation }) => {
         </View>
         <View>
           {tasks.map((task, index) => (
-            <View
+            <TouchableWithoutFeedback
               key={index}
-              style={[
-                styles.taskContainer,
-                isSwitchOn ? styles.lightModeTaskContainer : null,
-              ]}
+              onLongPress={() => handleLongPress(index)}
             >
-              <View style={styles.task}>
-                <View style={styles.checkbox}>
-                  <Checkbox.Android
-                    status={checkedTasks[index] ? "checked" : "unchecked"}
-                    onPress={() => toggleTaskStatus(index)}
-                    color={isSwitchOn ? "#5BDDC7" : "#5BDDC7"}
-                    uncheckedColor={isSwitchOn ? "#000" : "#FFF"}
-                    style={styles.checkbox}
-                  />
-                </View>
-                <View style="taskBody">
-                  {/* TASK TITLE */}
-                  <Text
-                    variant="bodyLarge"
-                    style={{
-                      color: isSwitchOn ? "#000" : "#FFF",
-                      width: 150,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {task.title}
-                  </Text>
-                  <HorizontalLine isLightMode={isSwitchOn} />
-                  {/* TASK BODY */}
-                  <Text
-                    variant="bodyMedium"
-                    style={{
-                      color: isSwitchOn ? "#000" : "#FFF",
-                      width: 150,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {task.description}
-                  </Text>
-                </View>
-                <View style={styles.taskStatus}>
-                  <View
-                    style={[
-                      styles.time,
-                      isSwitchOn ? styles.lightStatusContainer : null,
-                    ]}
-                  >
-                    <Text variant="labelLarge" style={{ color: "#000" }}>
-                      Time:{" "}
-                    </Text>
-                    <Text style={{ color: "#000" }}>{task.dueDate}</Text>
+              <View
+                style={[
+                  styles.taskContainer,
+                  isSwitchOn ? styles.lightModeTaskContainer : null,
+                ]}
+              >
+                <View style={styles.task}>
+                  <View style={styles.checkbox}>
+                    <Checkbox.Android
+                      status={checkedTasks[index] ? "checked" : "unchecked"}
+                      onPress={() => toggleTaskStatus(index)}
+                      color={isSwitchOn ? "#5BDDC7" : "#5BDDC7"}
+                      uncheckedColor={isSwitchOn ? "#000" : "#FFF"}
+                      style={styles.checkbox}
+                    />
                   </View>
-
-                  <View style={styles.statusContainer}>
+                  <View style="taskBody">
                     <Text
-                      variant="labelLarge"
-                      style={{ color: isSwitchOn ? "#000" : "#FFF" }}
+                      variant="bodyLarge"
+                      style={{
+                        color: isSwitchOn ? "#000" : "#FFF",
+                        width: 150,
+                        fontWeight: "bold",
+                      }}
                     >
-                      Status:{" "}
+                      {task.title}
+                    </Text>
+                    <HorizontalLine isLightMode={isSwitchOn} />
+                    <Text
+                      variant="bodyMedium"
+                      style={{
+                        color: isSwitchOn ? "#000" : "#FFF",
+                        width: 150,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {task.description}
+                    </Text>
+                  </View>
+                  <View style={styles.taskStatus}>
+                    <View
+                      style={[
+                        styles.time,
+                        isSwitchOn ? styles.lightStatusContainer : null,
+                      ]}
+                    >
+                      <Text variant="labelLarge" style={{ color: "#000" }}>
+                        Time:{" "}
+                      </Text>
+                      <Text style={{ color: "#000" }}>{task.dueDate}</Text>
+                    </View>
+                    <View style={styles.statusContainer}>
                       <Text
-                        variant="labelMedium"
+                        variant="labelLarge"
                         style={{ color: isSwitchOn ? "#000" : "#FFF" }}
                       >
-                        {checkedTasks[index] ? "Done" : "Ongoing"}
+                        Status:{" "}
+                        <Text
+                          variant="labelMedium"
+                          style={{ color: isSwitchOn ? "#000" : "#FFF" }}
+                        >
+                          {checkedTasks[index] ? "Done" : "Ongoing"}
+                        </Text>
                       </Text>
-                    </Text>
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
+            </TouchableWithoutFeedback>
           ))}
         </View>
       </ScrollView>
