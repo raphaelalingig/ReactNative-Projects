@@ -1,24 +1,16 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import LandingPage from "./components/pages/LandingPage";
+import React, { useState } from "react"; // Import useState
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Navigation from "./components/Navigation/Navigation";
 
 export default function App() {
+  const [isSwitchOn, setIsSwitchOn] = useState(false); 
+
   return (
     <PaperProvider>
       <SafeAreaView style={{ flex: 1 }}>
-        <LandingPage />
+        <Navigation isSwitchOn={isSwitchOn} /> 
       </SafeAreaView>
     </PaperProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

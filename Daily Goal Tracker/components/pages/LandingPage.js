@@ -5,8 +5,9 @@ import { Entypo } from "@expo/vector-icons";
 import { Checkbox, Text, Switch } from "react-native-paper";
 import TaskModal from "../modal/TaskModal";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Settings from "./Settings";
 
-const LandingPage = () => {
+const LandingPage = ({ navigation }) => {
   const HorizontalLine = ({ isLightMode }) => {
     return (
       <View
@@ -43,6 +44,7 @@ const LandingPage = () => {
     <View
       style={[styles.container, isSwitchOn ? styles.lightModeContainer : null]}
     >
+      
       <ScrollView>
         <View style={styles.header}>
           <View style={styles.menu}>
@@ -51,6 +53,7 @@ const LandingPage = () => {
                 name="menufold"
                 size={28}
                 color={isSwitchOn ? "#000" : "#FFF"}
+                onPress={() => navigation.toggleDrawer()}
               />
             </TouchableOpacity>
           </View>
@@ -69,17 +72,24 @@ const LandingPage = () => {
                     onValueChange={onToggleSwitch}
                     color="#5BDDC7"
                   />
+                  
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
+
         </View>
         <View style={styles.addTaskContainer}>
           <TouchableOpacity onPress={toggleModal}>
             <View style={styles.iconPlus}>
               <Entypo name="plus" size={24} color="#5BDDC7" />
             </View>
-            <Text style={{ fontWeight: "bold", color: isSwitchOn ? "#000" : "#FFF" }}>
+            <Text
+              style={{
+                fontWeight: "bold",
+                color: isSwitchOn ? "#000" : "#FFF",
+              }}
+            >
               Add New Task
             </Text>
           </TouchableOpacity>
